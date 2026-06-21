@@ -10,28 +10,64 @@ pipeline {
         }
 
         stage('Install Dependencies') {
+pipeline {
+    agent any
+
+    environment {
+        NODE_ENV = 'production'
+        APP_NAME = 'galleri-app'
+    }
+
+    stages {
+
+        stage('Checkout Code') {
             steps {
+                echo 'Checking out source code...'
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing Node.js dependencies...'
+                sh 'node -v'
                 sh 'npm install'
             }
         }
 
-        stage('Build') {
+        stage('Code Quality Check') {
             steps {
-                echo "Building application..."
-                sh 'node -v'
+                echo 'Running basic code validation...'
+                sh 'npm audit || true'
             }
         }
 
-        stage('Test') {
+        stage('Build Application') {
             steps {
+                echo 'Building application...'
+                sh 'echo "No build step required for plain Node.js app"'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo 'Executing automated tests...'
                 sh 'npm test'
             }
         }
 
-        stage('Deploy') {
+        stage('Security Scan (Optional)') {
             steps {
+                echo 'Checking vulnerabilities...'
+                sh 'npm audit --audit-level=high || true'
+            }
+        }
+
+        stage('Deploy to Render') {
+            steps {
+                echo 'Triggering Render deployment...'
                 sh '''
-                curl -X POST https://api.render.com/deploy/srv-d8ns4smrnols73e4nd2g?key=GZJuKl2z_qc
+                    curl -X POST https://api.render.com/deploy/srv-d8ns4smrnols73e4nd2g?key=GZJuKl2z_qc
                 '''
             }
         }
@@ -39,11 +75,11 @@ pipeline {
 
     post {
         success {
-            echo "Pipeline successful"
+            echo 'Pipeline completed successfully ✔'
         }
 
         failure {
-            echo "Pipeline failed"
+            echo 'Pipeline failed ❌'
         }
     }
 }
