@@ -38,7 +38,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                sh 'npx test'
+                sh 'npm test'
             }
         }
 
