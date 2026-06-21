@@ -38,7 +38,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                sh 'npm test'
+                sh 'npx test'
             }
         }
 
@@ -57,7 +57,7 @@ pipeline {
             echo 'Pipeline SUCCESS ✔'
             mail to: 'kegoyacygan@gmail.com',
                  subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Build successful.\nCheck Render deployment."
+                 body:"Build successful.\nCheck Render deployment."
         }
 
         failure {
