@@ -74,12 +74,18 @@ pipeline {
     }
 
     post {
-        success {
-            echo 'Pipeline completed successfully ✔'
-        }
-
-        failure {
-            echo 'Pipeline failed ❌'
-        }
+          success {
+        echo 'Pipeline completed successfully ✔'
+        mail to: 'kegoyacygan@gmail.com',
+             subject: "SUCCESS: Jenkins Pipeline - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+             body: "Build succeeded.\n\nJob: ${env.JOB_NAME}\nBuild: ${env.BUILD_NUMBER}\nCheck Render deployment."
     }
+
+    failure {
+        echo 'Pipeline failed ❌'
+        mail to: 'kegoyacygan@gmail.com',
+             subject: "FAILED: Jenkins Pipeline - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+             body: "Build failed.\n\nJob: ${env.JOB_NAME}\nBuild: ${env.BUILD_NUMBER}\nCheck Jenkins console output."
+    }
+    
 }
