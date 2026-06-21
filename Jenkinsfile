@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        NODE_ENV = 'production'
+        APP_NAME = 'galleri-app'
+    }
+
     stages {
 
         stage('Checkout') {
@@ -10,26 +15,8 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-pipeline {
-    agent any
-
-    environment {
-        NODE_ENV = 'production'
-        APP_NAME = 'galleri-app'
-    }
-
-    stages {
-
-        stage('Checkout Code') {
             steps {
-                echo 'Checking out source code...'
-                checkout scm
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                echo 'Installing Node.js dependencies...'
+                echo 'Installing dependencies...'
                 sh 'node -v'
                 sh 'npm install'
             }
@@ -37,35 +24,27 @@ pipeline {
 
         stage('Code Quality Check') {
             steps {
-                echo 'Running basic code validation...'
+                echo 'Running npm audit...'
                 sh 'npm audit || true'
             }
         }
 
-        stage('Build Application') {
+        stage('Build') {
             steps {
-                echo 'Building application...'
-                sh 'echo "No build step required for plain Node.js app"'
+                echo 'Build stage (no build tool required)'
             }
         }
 
-        stage('Run Tests') {
+        stage('Test') {
             steps {
-                echo 'Executing automated tests...'
+                echo 'Running tests...'
                 sh 'npm test'
-            }
-        }
-
-        stage('Security Scan (Optional)') {
-            steps {
-                echo 'Checking vulnerabilities...'
-                sh 'npm audit --audit-level=high || true'
             }
         }
 
         stage('Deploy to Render') {
             steps {
-                echo 'Triggering Render deployment...'
+                echo 'Deploying to Render...'
                 sh '''
                     curl -X POST https://api.render.com/deploy/srv-d8ns4smrnols73e4nd2g?key=GZJuKl2z_qc
                 '''
@@ -74,18 +53,19 @@ pipeline {
     }
 
     post {
-          success {
-        echo 'Pipeline completed successfully ✔'
-        mail to: 'kegoyacygan@gmail.com',
-             subject: "SUCCESS: Jenkins Pipeline - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-             body: "Build succeeded.\n\nJob: ${env.JOB_NAME}\nBuild: ${env.BUILD_NUMBER}\nCheck Render deployment."
-    }
+        success {
+            echo 'Pipeline SUCCESS ✔'
+            mail to: 'kegoyacygan@gmail.com',
+                 subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Build successful.\nCheck Render deployment."
+        }
 
-    failure {
-        echo 'Pipeline failed ❌'
-        mail to: 'kegoyacygan@gmail.com',
-             subject: "FAILED: Jenkins Pipeline - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-             body: "Build failed.\n\nJob: ${env.JOB_NAME}\nBuild: ${env.BUILD_NUMBER}\nCheck Jenkins console output."
+        failure {
+            echo 'Pipeline FAILED ❌'
+            mail to: 'kegoyacygan@gmail.com',
+                 subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                 body: "Check Jenkins logs."
+        }
     }
-  }  
 }
+          
