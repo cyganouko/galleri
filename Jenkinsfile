@@ -87,5 +87,5 @@ pipeline {
              subject: "FAILED: Jenkins Pipeline - ${env.JOB_NAME} #${env.BUILD_NUMBER}",
              body: "Build failed.\n\nJob: ${env.JOB_NAME}\nBuild: ${env.BUILD_NUMBER}\nCheck Jenkins console output."
     }
-    
+  }  
 }
